@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -28,7 +29,11 @@ func openDb() {
 	if err != nil {
 		panic(err.Error()) // proper error handling instead of panic in your app
 	}
+}
 
+func closeDb() {
+	insert_user.Close()
+	db.Close()
 }
 
 func testdb() {
@@ -53,12 +58,29 @@ func testdb() {
 
 }
 
+func login(w http.ResponseWriter, r *http.Request) {
+	var email string
+	var password string
+	var qpass string
+	email = r.PostForm.Get("email")
+	password = r.PostForm.Get("password")
+	fmt.Println(email + " " + password)
+	rows := db.QueryRow("select password from user where email=?", email)
+
+	rows.Scan(&qpass)
+	if password == qpass {
+		w.Write([]byte("Success"))
+
+	} else {
+		w.Write([]byte("Failure"))
+	}
+
+}
+
 func main() {
-	fmt.Printf("test")
 	openDb()
-	testdb()
-	defer insert_user.Close()
-
-	defer db.Close()
-
+	http.Handle("/", http.FileServer(http.Dir("./static")))
+	http.HandleFunc("/login", login)
+	http.ListenAndServe(":3000", nil)
+	defer closeDb()
 }

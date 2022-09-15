@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <body onload="init()">
+        <h1>MyTodo</h1>
+        <div>       
+             <input id="signup" type="button" value="Sign Up"/>
+             <input id="signin" type="button" value="Sign In"/>
+        </div>
+        <script>
+           document.getElementById("signup").onclick = function () {
+                    location.href = "signup.html";
+            };
+            document.getElementById("signin").onclick = function () {
+                    location.href = "signin.html";
+            };
+        </script>
+    </body>
+</html>
