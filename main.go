@@ -2,9 +2,7 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -59,72 +57,6 @@ func testdb() {
 	}
 
 }
-func signup(w http.ResponseWriter, r *http.Request) {
-	var usrid int
-	body, err := io.ReadAll(r.Body)
-	usr := struct {
-		Name        string `json:"name,omitempty"`
-		Email       string `json:"email,omitempty"`
-		Password    string `json:"password,omitempty"`
-		ConfirmPass string `json:"confirmPass,omitempty"`
-	}{}
-
-	if err != nil {
-		w.Write([]byte("failed"))
-		return
-	}
-	err = json.Unmarshal(body, &usr)
-	if err != nil {
-		w.Write([]byte("failed"))
-		return
-	}
-
-	//if usr.Password == usr.ConfirmPass {
-	row := db.QueryRow("select userid from user where email=?", usr.Email)
-	err = row.Scan(&usrid)
-	if err == sql.ErrNoRows {
-		_, err = insert_user.Exec(usr.Name, usr.Email, usr.Password)
-		if err != nil {
-
-			w.Write([]byte("Error Registering"))
-		} else {
-			w.Write([]byte("Success"))
-		}
-	} else {
-		w.Write([]byte("user already exist"))
-	}
-
-	// } else {
-	// 	w.Write([]byte("Confirm password not match"))
-	// }
-
-}
-func login(w http.ResponseWriter, r *http.Request) {
-	var qpass string
-
-	body, err := io.ReadAll(r.Body)
-	usr := user{}
-
-	if err != nil {
-		w.Write([]byte("failed"))
-		return
-	}
-	err = json.Unmarshal(body, &usr)
-	if err != nil {
-		w.Write([]byte("failed"))
-		return
-	}
-
-	rows := db.QueryRow("select password from user where email=?", usr.Email)
-
-	rows.Scan(&qpass)
-	if usr.Password == qpass {
-		w.Write([]byte("Success"))
-
-	} else {
-		w.Write([]byte("Failure"))
-	}
-}
 
 // func testform(w http.ResponseWriter, r *http.Request) {
 // 	body, err := io.ReadAll(r.Body)
@@ -144,8 +76,12 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	openDb()
-	http.Handle("/", http.FileServer(http.Dir("./static")))
-	//	http.HandleFunc("/testform", testform)
+	iniweb()
+
+	http.HandleFunc("/", indexhtml)
+	http.HandleFunc("/signin.html", signinhtml)
+	http.HandleFunc("/signup.html", signuphtml)
+
 	http.HandleFunc("/login", login)
 	http.HandleFunc("/signup", signup)
 	http.ListenAndServe(":3000", nil)
