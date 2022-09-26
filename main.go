@@ -33,7 +33,7 @@ func main() {
 	openDb()
 	iniweb()
 
-	http.Handle("/js", http.FileServer(http.Dir("static/js/")))
+	http.HandleFunc("/js/", servJs)
 
 	http.HandleFunc("/", indexhtml)
 	http.HandleFunc("/signin.html", signinhtml)

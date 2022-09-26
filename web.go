@@ -28,6 +28,12 @@ func signuphtml(w http.ResponseWriter, r *http.Request) {
 	parsedTemplate.ExecuteTemplate(w, "signup.html", nil)
 }
 
+func servJs(w http.ResponseWriter, r *http.Request) {
+	jsfile := r.URL.Path[len("/js/"):]
+
+	http.ServeFile(w, r, "static/js/"+jsfile)
+}
+
 func signup(w http.ResponseWriter, r *http.Request) {
 	var usrid int
 	body, err := io.ReadAll(r.Body)
