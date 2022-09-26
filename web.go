@@ -16,16 +16,14 @@ func iniweb() {
 	parsedTemplate = template.Must(template.ParseFiles("static/index.html", "static/signin.html", "static/signup.html"))
 }
 
-func indexhtml(w http.ResponseWriter, r *http.Request) {
-	parsedTemplate.ExecuteTemplate(w, "index.html", nil)
-}
+func servhtml(w http.ResponseWriter, r *http.Request) {
+	htmlfile := r.URL.Path[len("/"):]
 
-func signinhtml(w http.ResponseWriter, r *http.Request) {
-	parsedTemplate.ExecuteTemplate(w, "signin.html", nil)
-}
-
-func signuphtml(w http.ResponseWriter, r *http.Request) {
-	parsedTemplate.ExecuteTemplate(w, "signup.html", nil)
+	if len(htmlfile) > 0 {
+		parsedTemplate.ExecuteTemplate(w, htmlfile, nil)
+	} else {
+		parsedTemplate.ExecuteTemplate(w, "index.html", nil)
+	}
 }
 
 func servJs(w http.ResponseWriter, r *http.Request) {

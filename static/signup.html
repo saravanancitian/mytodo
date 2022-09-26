@@ -32,7 +32,7 @@
                 event.preventDefault();
                 const data = formtojson(event.target);
                 if(data.password.localeCompare(data.confirmPass) == 0){
-                    ajxcall("/signup", "POST", JSON.stringify(data), (ret)=>{console.log("success" + ret)}, false);    
+                    ajxcall("/signup", "POST", JSON.stringify(data), (ret)=>{alert("success" + ret)}, false);    
                 }
                 else {
                        alert("Confirm Password not match"); 

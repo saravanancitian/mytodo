@@ -35,9 +35,8 @@ func main() {
 
 	http.HandleFunc("/js/", servJs)
 
-	http.HandleFunc("/", indexhtml)
-	http.HandleFunc("/signin.html", signinhtml)
-	http.HandleFunc("/signup.html", signuphtml)
+	http.HandleFunc("/", servhtml)
+	http.HandleFunc("/*.html", servhtml)
 
 	http.HandleFunc("/login", login)
 	http.HandleFunc("/signup", signup)
