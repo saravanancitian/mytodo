@@ -34,6 +34,7 @@ func servJs(w http.ResponseWriter, r *http.Request) {
 
 func signup(w http.ResponseWriter, r *http.Request) {
 	var usrid int
+
 	body, err := io.ReadAll(r.Body)
 	usr := struct {
 		Name        string `json:"name,omitempty"`
