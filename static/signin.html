@@ -2,13 +2,13 @@
 
 <html>
     <head>
-        <script src="js/ajax.js"> </script>
-        <script src="js/utils.js"></script>
+        <!-- <script src="js/ajax.js"> </script>
+        <script src="js/utils.js"></script> -->
     </head>
     <body>
         <h1>MyTodo</h1>
         <h3>Sign In</h3>
-        <form id="frmsignup">
+        <form id="frmsignin" action="/login" method="post">
             
             <label>Email:</label><input type="text" id="email" name="email" value=""/>
             <br>
@@ -16,11 +16,8 @@
             <br>
             <input type="submit" id="submit" value="Submit">
             <input type="button" id="cancel" value="cancel" onclick="javascript:history.back();">
-
-
-
         </form>
-   
+<!--    
         <script>
             function validateForm(){
 
@@ -33,6 +30,6 @@
 
             const form = document.getElementById('frmsignup');
             form.addEventListener('submit', handleSubmit);
-        </script>
+        </script> -->
     </body>
 </html>

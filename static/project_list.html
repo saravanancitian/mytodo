@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <div>
+            <h4>{{.username}}</h4>
+            <input type="button" value="New Project" id="newprj">
+        </div>
+        <div>
+            <ul>
+                {{range .Projects}}
+                <li><a href="/proj/{{.id}}">{{.name}}</a></li>
+                {{end}}
+            </ul>
+        </div>
+    </body>
+</html>

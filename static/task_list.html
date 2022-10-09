@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <div>
+            <h4>{{.UserName}}</h4>
+            <h2>{{.ProjectName}}</h2>
+            <p>{{.ProjectDesc}}</p>
+            <input type="button" value="Add Task" id="addtask">
+        </div>
+        <div>
+            <ul>
+                {{range .Tasks}}
+                <li><a href="/task/{{.id}}">{{.name}}</a></li>
+                {{end}}
+            </ul>
+        </div>
+    </body>
+</html>

@@ -10,23 +10,21 @@
     <body>
         <h1>MyTodo</h1>
         <h3>Sign Up</h3>
-        <form id="frmsignup">
-            <label>Name:</label><input type="text" id="name" value=""/>
+        
+        <form id="frmsignup" action="/signup" method="post">
+            <label>Name:</label><input type="text" id="name" name="name" value=""/>
             <br>
-            <label>Email:</label><input type="text" id="email" value=""/>
+            <label>Email:</label><input type="text" id="email" name="email" value=""/>
             <br>
-            <label>Password:</label><input type="text" id="password" value=""/>
+            <label>Password:</label><input type="text" id="password" name="password" value=""/>
             <br>
-            <label>Confirm Password:</label><input type="text" id="confirmPass" value=""/>
+            <label>Confirm Password:</label><input type="text" id="confirmPass" name="confirmPasss" value=""/>
             <br>
             <input type="submit" id="submit" value="Submit">
             <input type="button" id="cancel" value="cancel" onclick="javascript:history.back();">
-
-
-
         </form>
 
-        <script>
+        <!-- <script>
             
             function handleSubmit(event){
                 event.preventDefault();
@@ -43,6 +41,6 @@
             const form = document.getElementById('frmsignup');
             form.addEventListener('submit', handleSubmit);
 
-        </script>
+        </script> -->
     </body>
 </html>
