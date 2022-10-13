@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 var db *sql.DB
@@ -49,27 +48,27 @@ func openDb() {
 	}
 }
 
-func testdb() {
-	// result, err := insert_user.Exec("testusr", "testuser@test.com", "password")
-	// if err != nil {
-	// 	panic(err)
-	// }
+// func testdb() {
+// 	// result, err := insert_user.Exec("testusr", "testuser@test.com", "password")
+// 	// if err != nil {
+// 	// 	panic(err)
+// 	// }
 
-	// fmt.Println(result.LastInsertId())
+// 	// fmt.Println(result.LastInsertId())
 
-	rows, err := db.Query("select * from user")
-	if err != nil {
-		panic(err)
-	}
-	defer rows.Close()
+// 	rows, err := db.Query("select * from user")
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	defer rows.Close()
 
-	for rows.Next() {
-		var usr user
-		rows.Scan(&usr.Userid, &usr.Name, &usr.Email, &usr.Password)
-		fmt.Printf("%s %s %s", usr.Name, usr.Email, usr.Password)
-	}
+// 	for rows.Next() {
+// 		var usr user
+// 		rows.Scan(&usr.Userid, &usr.Name, &usr.Email, &usr.Password)
+// 		fmt.Printf("%s %s %s", usr.Name, usr.Email, usr.Password)
+// 	}
 
-}
+// }
 
 func closeDb() {
 	insert_user.Close()

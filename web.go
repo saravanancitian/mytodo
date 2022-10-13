@@ -14,9 +14,21 @@ type Error struct {
 
 var parsedTemplate *template.Template
 
+var servermux *http.ServeMux
+
 func iniweb() {
 	parsedTemplate = template.Must(template.ParseFiles("static/index.html", "static/signin.html", "static/signup.html", "static/error.html",
 		"static/create_project.html", "static/project_list.html", "static/add_update_task.html", "static/task_list.html"))
+
+	servermux = http.NewServeMux()
+	servermux.HandleFunc("/js/", servJs)
+
+	servermux.HandleFunc("/", servhtml)
+	servermux.HandleFunc("/*.html", servhtml)
+
+	servermux.HandleFunc("/login", login)
+	servermux.HandleFunc("/signup", signup)
+	servermux.HandleFunc("/project/create", create_project)
 }
 
 func servhtml(w http.ResponseWriter, r *http.Request) {

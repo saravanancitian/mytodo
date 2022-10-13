@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html>
     <body>
-       <form action = "/proj/create" method="POST">
+        <div>
+            <label>User: </label><h4>{{ .Username}}</h4>
+        </div>
+       <form action = "/project/create" method="POST">
             <label>Project Name:</label>
             <input type="text" name="name" value="" />
             <label>Description</label>
             <input type="text" name="desc" value=""/>
+            <input type="hidden" name="userid" value="{{ .Userid}}">
+            <input type="hidden" name="username" value="{{ .Username}}">
+
             <input type="submit" value="Create" />
             <input type="button" value="Cancel" />
        </form>

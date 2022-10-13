@@ -8,15 +8,7 @@ import (
 
 func main() {
 	openDb()
-	iniweb()
-
-	http.HandleFunc("/js/", servJs)
-
-	http.HandleFunc("/", servhtml)
-	http.HandleFunc("/*.html", servhtml)
-
-	http.HandleFunc("/login", login)
-	http.HandleFunc("/signup", signup)
-	http.ListenAndServe(":3000", nil)
 	defer closeDb()
+	iniweb()
+	http.ListenAndServe(":3000", servermux)
 }
