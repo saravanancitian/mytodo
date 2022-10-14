@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
 )
 
@@ -92,4 +93,17 @@ func create_project(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+}
+
+func getProject(w http.ResponseWriter, r *http.Request) {
+	projectidstr := r.URL.Path[len("/project/"):]
+	if len(projectidstr) > 0 {
+		numpattern, _ := regexp.Compile("[0-9]+$")
+		if numpattern.MatchString(projectidstr) {
+			projectid, err := strconv.ParseInt(projectidstr, 10, 32)
+			if err == nil {
+
+			}
+		}
+	}
 }
