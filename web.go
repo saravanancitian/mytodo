@@ -29,6 +29,8 @@ func iniweb() {
 	servermux.HandleFunc("/login", login)
 	servermux.HandleFunc("/signup", signup)
 	servermux.HandleFunc("/project/create", create_project)
+	servermux.HandleFunc("/project/", getProject)
+
 }
 
 func servhtml(w http.ResponseWriter, r *http.Request) {
