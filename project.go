@@ -15,32 +15,12 @@ type Project struct {
 	des       string
 }
 
-func getProjectList(userid int) []Project {
-	var projects []Project
-	rows, err := db.Query("Select * from project where userid = ?", userid)
-	if err != nil {
-		//TODO need check for error
-		log.Fatal("Error in query")
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var project Project
-		err = rows.Scan(&project.ProjectId, &project.Name, &project.UserId, &project.Completed, &project.des)
-		if err != nil {
-
-			break
-		}
-		projects = append(projects, project)
-	}
-
-	return projects
-
-}
-
 func gotoProjectPg(usr *User, w http.ResponseWriter, r *http.Request) {
 
-	var projects []Project = getProjectList(usr.Userid)
+	projects, err := fetchProjectsForUserId(usr.Userid)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 	if len(projects) > 0 {
 		var data = struct {
@@ -68,30 +48,45 @@ func create_project(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal("Error parsing form", err)
 		error := Error{1, err.Error()}
-		parsedTemplate.ExecuteTemplate(w, "error.html", error)
+		showError(error, w)
 		return
 	}
 
 	name := r.FormValue("name")
 	desc := r.FormValue("desc")
 	userid, _ = strconv.Atoi(r.FormValue("userid"))
-	username := r.FormValue("username")
-	_, err = insert_project.Exec(name, userid, false, desc)
-	if err != nil {
 
+	var project *Project = new(Project)
+	project.Name = name
+	project.des = desc
+	project.UserId = userid
+	project.Completed = false
+
+	err = saveProject(project)
+
+	if err != nil {
 		error := Error{1, err.Error()}
-		parsedTemplate.ExecuteTemplate(w, "error.html", error)
+		showError(error, w)
 
 	} else {
-		var projects []Project = getProjectList(userid)
-
-		var data = struct {
-			Username string
-			Projects []Project
-		}{username, projects}
-		parsedTemplate.ExecuteTemplate(w, "project_list.html", data)
-
+		showProjectList(w, r)
 	}
+
+}
+
+func showProjectList(w http.ResponseWriter, r *http.Request) {
+	var userid int
+
+	userid, _ = strconv.Atoi(r.FormValue("userid"))
+	username := r.FormValue("username")
+
+	projects, err := fetchProjectsForUserId(userid)
+
+	var data = struct {
+		Username string
+		Projects []Project
+	}{username, projects}
+	parsedTemplate.ExecuteTemplate(w, "project_list.html", data)
 
 }
 
@@ -101,9 +96,40 @@ func getProject(w http.ResponseWriter, r *http.Request) {
 		numpattern, _ := regexp.Compile("[0-9]+$")
 		if numpattern.MatchString(projectidstr) {
 			projectid, err := strconv.ParseInt(projectidstr, 10, 32)
-			if err == nil {
+			if err != nil {
+				error := Error{1, err.Error()}
+				showError(error, w)
+			} else {
+				tasks, err := fetchTasksForProjectId(int(projectid))
+				if err != nil {
+					error := Error{1, err.Error()}
+					showError(error, w)
+				} else {
+					project, err := fetchProjectForId(int(projectid))
+					if err != nil {
+						error := Error{1, err.Error()}
+						showError(error, w)
+					} else {
+						user, err := fetchUserForId(project.UserId)
+						if err != nil {
+							error := Error{1, err.Error()}
+							showError(error, w)
+						} else {
+							var data = struct {
+								UserName    string
+								ProjectName string
+								ProjectDesc string
+								Tasks       []Task
+							}{user.Name, project.Name, project.des, tasks}
+							parsedTemplate.ExecuteTemplate(w, "task_list.html", data)
+						}
+					}
 
+				}
 			}
 		}
+	} else {
+		error := Error{1, "Invalid Project Id"}
+		showError(error, w)
 	}
 }

@@ -48,27 +48,107 @@ func openDb() {
 	}
 }
 
-// func testdb() {
-// 	// result, err := insert_user.Exec("testusr", "testuser@test.com", "password")
-// 	// if err != nil {
-// 	// 	panic(err)
-// 	// }
+func fetchUserForEmail(email string) (*User, error) {
+	var usr User
+	rows := db.QueryRow("select * from user where email=?", email)
+	err := rows.Scan(&usr.Userid, &usr.Name, &usr.Email, &usr.Password)
 
-// 	// fmt.Println(result.LastInsertId())
+	if err != nil {
+		return nil, err
+	}
 
-// 	rows, err := db.Query("select * from user")
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	defer rows.Close()
+	return &usr, nil
+}
 
-// 	for rows.Next() {
-// 		var usr user
-// 		rows.Scan(&usr.Userid, &usr.Name, &usr.Email, &usr.Password)
-// 		fmt.Printf("%s %s %s", usr.Name, usr.Email, usr.Password)
-// 	}
+func fetchUserForId(userid int) (*User, error) {
+	var usr User
+	rows := db.QueryRow("select * from user where userid=?", userid)
+	err := rows.Scan(&usr.Userid, &usr.Name, &usr.Email, &usr.Password)
 
-// }
+	if err != nil {
+		return nil, err
+	}
+
+	return &usr, nil
+}
+
+func saveUser(usr *User) error {
+	_, err := insert_user.Exec(usr.Name, usr.Email, usr.Password)
+	return err
+}
+
+func fetchProjectForId(projectid int) (*Project, error) {
+	var project Project
+	row := db.QueryRow("select * from project where projectid = ?", projectid)
+
+	err := row.Scan(&project.ProjectId, &project.Name, &project.UserId, &project.Completed, &project.des)
+
+	if row.Err() == err {
+		return nil, err
+	}
+	return &project, nil
+}
+
+func saveProject(project *Project) error {
+	_, err := insert_project.Exec(project.Name, project.UserId, project.Completed, project.des)
+	return err
+}
+
+func fetchProjectsForUserId(userid int) ([]Project, error) {
+	var projects []Project
+	rows, err := db.Query("Select * from project where userid = ?", userid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var project Project
+		err = rows.Scan(&project.ProjectId, &project.Name, &project.UserId, &project.Completed, &project.des)
+		if err != nil {
+
+			break
+		}
+		projects = append(projects, project)
+	}
+
+	return projects, nil
+}
+
+func fetchTasksForProjectId(projectId int) ([]Task, error) {
+	var tasks []Task
+	rows, err := db.Query("Select * from task where projectid = ?", projectId)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var task Task
+
+		err = rows.Scan(&task.TaskId, &task.Name, &task.Des, &task.ProjectId, &task.State)
+		if err != nil {
+
+			break
+		}
+		tasks = append(tasks, task)
+
+	}
+	return tasks, nil
+}
+
+func fetchTaskforId(taskid int) (*Task, error) {
+	var task Task
+	row := db.QueryRow("select * from trask where taskid = ?", taskid)
+
+	err := row.Scan(&task.TaskId, &task.Name, &task.Des, &task.ProjectId, &task.State)
+
+	if row.Err() == err {
+		return nil, err
+	}
+	return &task, nil
+}
 
 func closeDb() {
 	insert_user.Close()

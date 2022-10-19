@@ -30,6 +30,7 @@ func iniweb() {
 	servermux.HandleFunc("/signup", signup)
 	servermux.HandleFunc("/project/create", create_project)
 	servermux.HandleFunc("/project/", getProject)
+	servermux.HandleFunc("/task/", getTask)
 
 }
 

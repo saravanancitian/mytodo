@@ -14,42 +14,40 @@ type User struct {
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-	var usr User
+	var usr *User
 	err := r.ParseForm()
 	if err != nil {
 		fmt.Fprintf(w, "ParseForm() err: %v", err)
 		error := Error{1, err.Error()}
-		parsedTemplate.ExecuteTemplate(w, "error.html", error)
+		showError(error, w)
 		return
 	}
 
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 
-	rows := db.QueryRow("select * from user where email=?", email)
-
-	err = rows.Scan(&usr.Userid, &usr.Name, &usr.Email, &usr.Password)
+	usr, err = fetchUserForEmail(email)
 	if err != nil {
 		error := Error{1, err.Error()}
-		parsedTemplate.ExecuteTemplate(w, "error.html", error)
+		showError(error, w)
 	}
+
 	if password == usr.Password {
-		gotoProjectPg(&usr, w, r)
+		gotoProjectPg(usr, w, r)
 
 	} else {
 		error := Error{1, "Incorrect user id or password"}
-		parsedTemplate.ExecuteTemplate(w, "error.html", error)
+		showError(error, w)
 	}
 }
 
 func signup(w http.ResponseWriter, r *http.Request) {
-	var usrid int
 
 	err := r.ParseForm()
 	if err != nil {
 		fmt.Fprintf(w, "ParseForm() err: %v", err)
 		error := Error{1, err.Error()}
-		parsedTemplate.ExecuteTemplate(w, "error.html", error)
+		showError(error, w)
 		return
 	}
 
@@ -59,34 +57,40 @@ func signup(w http.ResponseWriter, r *http.Request) {
 	confirmPass := r.FormValue("confirmPass")
 
 	if password == confirmPass {
-		row := db.QueryRow("select userid from user where email=?", email)
+		var usr *User
 
-		err = row.Scan(&usrid)
+		usr, err = fetchUserForEmail(email)
+
 		if err == sql.ErrNoRows {
-			_, err = insert_user.Exec(name, email, password)
+			usr = new(User)
+			usr.Name = name
+			usr.Email = email
+			usr.Password = password
+			err = saveUser(usr)
+
 			if err != nil {
 
 				error := Error{1, err.Error()}
-				parsedTemplate.ExecuteTemplate(w, "error.html", error)
+				showError(error, w)
 
 			} else {
-				rows := db.QueryRow("select * from user where email=?", email)
-				var usr User
 
-				err = rows.Scan(&usr.Userid, &usr.Name, &usr.Email, &usr.Password)
+				usr, err = fetchUserForEmail(email)
+
 				if err != nil {
 					error := Error{1, err.Error()}
-					parsedTemplate.ExecuteTemplate(w, "error.html", error)
+					showError(error, w)
+					return
 				}
-				gotoProjectPg(&usr, w, r)
+				gotoProjectPg(usr, w, r)
 			}
 		} else {
 			error := Error{1, "user already exist"}
-			parsedTemplate.ExecuteTemplate(w, "error.html", error)
+			showError(error, w)
 		}
 
 	} else {
 		error := Error{1, "Confirm password not match"}
-		parsedTemplate.ExecuteTemplate(w, "error.html", error)
+		showError(error, w)
 	}
 }
