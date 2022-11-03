@@ -6,7 +6,7 @@ import (
 
 var db *sql.DB
 var insert_user, insert_project, insert_task *sql.Stmt
-var update_password, update_project_status, update_task *sql.Stmt
+var update_password, update_project, update_task *sql.Stmt
 
 func openDb() {
 	var err error
@@ -37,12 +37,12 @@ func openDb() {
 		panic(err.Error()) // proper error handling instead of panic in your app
 	}
 
-	update_project_status, err = db.Prepare("update project set completed = ? where projectid = ?")
+	update_project, err = db.Prepare("update project set name = ?, userid = ?, completed = ?, des = ? where projectid = ?")
 	if err != nil {
 		panic(err.Error()) // proper error handling instead of panic in your app
 	}
 
-	update_task, err = db.Prepare("update task set name = ?, des= ?, state = ? where taskid = ?")
+	update_task, err = db.Prepare("update task set name = ?, des= ?,projectid = ?, state = ? where taskid = ?")
 	if err != nil {
 		panic(err.Error()) // proper error handling instead of panic in your app
 	}
@@ -83,14 +83,20 @@ func fetchProjectForId(projectid int) (*Project, error) {
 
 	err := row.Scan(&project.ProjectId, &project.Name, &project.UserId, &project.Completed, &project.des)
 
-	if row.Err() == err {
+	if err != nil && row.Err() == err {
 		return nil, err
 	}
 	return &project, nil
 }
 
-func saveProject(project *Project) error {
-	_, err := insert_project.Exec(project.Name, project.UserId, project.Completed, project.des)
+func saveorUpdateProject(project *Project) error {
+	var err error = nil
+	if project.ProjectId == 0 {
+		_, err = insert_project.Exec(project.Name, project.UserId, project.Completed, project.des)
+	} else {
+		_, err = update_project.Exec(project.Name, project.UserId, project.Completed, project.des, project.ProjectId)
+	}
+
 	return err
 }
 
@@ -140,14 +146,25 @@ func fetchTasksForProjectId(projectId int) ([]Task, error) {
 
 func fetchTaskforId(taskid int) (*Task, error) {
 	var task Task
-	row := db.QueryRow("select * from trask where taskid = ?", taskid)
+	row := db.QueryRow("select * from task where taskid = ?", taskid)
 
 	err := row.Scan(&task.TaskId, &task.Name, &task.Des, &task.ProjectId, &task.State)
 
-	if row.Err() == err {
+	if err != nil && row.Err() == err {
 		return nil, err
 	}
 	return &task, nil
+}
+
+func saveOrUpdateTask(task *Task) error {
+	var err error = nil
+	if task.TaskId == 0 {
+		_, err = insert_task.Exec(task.Name, task.Des, task.ProjectId, task.State)
+	} else {
+		_, err = update_task.Exec(task.Name, task.Des, task.ProjectId, task.State, task.TaskId)
+	}
+
+	return err
 }
 
 func closeDb() {
@@ -155,7 +172,7 @@ func closeDb() {
 	insert_project.Close()
 	insert_task.Close()
 	update_password.Close()
-	update_project_status.Close()
+	update_project.Close()
 	update_task.Close()
 	db.Close()
 }

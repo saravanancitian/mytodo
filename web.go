@@ -26,11 +26,19 @@ func iniweb() {
 	servermux.HandleFunc("/", servhtml)
 	servermux.HandleFunc("/*.html", servhtml)
 
+	//user
 	servermux.HandleFunc("/login", login)
 	servermux.HandleFunc("/signup", signup)
+
+	//project
+	servermux.HandleFunc("/project/newprj/", newProject)
 	servermux.HandleFunc("/project/create", create_project)
 	servermux.HandleFunc("/project/", getProject)
+
+	//task
 	servermux.HandleFunc("/task/", getTask)
+	servermux.HandleFunc("/task/save/", saveTask)
+	servermux.HandleFunc("/task/newtask/", newTask)
 
 }
 

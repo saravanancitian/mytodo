@@ -12,5 +12,10 @@
                 {{end}}
             </ul>
         </div>
+        <script>
+           document.getElementById("newprj").onclick = function () {
+                    location.href = "/project/newprj/{{.Userid}}";
+            };
+        </script>    
     </body>
 </html>

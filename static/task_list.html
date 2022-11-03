@@ -5,6 +5,7 @@
             <h4>{{.UserName}}</h4>
             <h2>{{.ProjectName}}</h2>
             <p>{{.ProjectDesc}}</p>
+            
             <input type="button" value="Add Task" id="addtask">
         </div>
         <div>
@@ -14,5 +15,11 @@
                 {{end}}
             </ul>
         </div>
+
+        <script>
+            document.getElementById("addtask").onclick = function () {
+                     location.href = "/task/newtask/{{.ProjectId}}";
+             };
+         </script>    
     </body>
 </html>
