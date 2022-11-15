@@ -8,9 +8,9 @@ var db *sql.DB
 var insert_user, insert_project, insert_task *sql.Stmt
 var update_password, update_project, update_task *sql.Stmt
 
-func openDb() {
+func openDb(driver string, datasource string) {
 	var err error
-	db, err = sql.Open("mysql", "root:root@/mytodo")
+	db, err = sql.Open(driver, datasource)
 	if err != nil {
 		panic(err)
 	}

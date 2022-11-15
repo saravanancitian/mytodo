@@ -1,0 +1,2 @@
+db.datasource=root:root@/mytodo
+db.driver=mysql
